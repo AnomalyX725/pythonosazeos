@@ -33,22 +33,22 @@ def install_dependencies():
 
 def create_directory():
     """
-    Prowadzi użytkownika przez wybór lokalizacji instalacji i tworzy folder AzeOS.
+    Tworzy folder `AzeOS` w wybranej lokalizacji instalacyjnej.
     """
     print_instructions(2)
-    default_path = os.path.expanduser("~/AzeOS")
+    default_path = os.path.expanduser("~/AzeOS")  # Domyślna lokalizacja instalacji
     print(f"Default installation path: {default_path}")
     user_path = input("Enter installation directory (press Enter to use default): ").strip()
-    destination = user_path or default_path
-    
-    # Tworzenie folderu AzeOS w wybranej lokalizacji
-    os.makedirs(destination, exist_ok=True)
-    print(f"Created directory: {destination}")
-    return destination
+    # Użycie domyślnego folderu lub własnej ścieżki
+    final_path = user_path or default_path
+    azeos_path = os.path.join(final_path, "AzeOS")  # Tworzenie folderu "AzeOS"
+    os.makedirs(azeos_path, exist_ok=True)  # Upewnienie się, że folder istnieje
+    print(f"Created directory: {azeos_path}")
+    return azeos_path
 
 def copy_files(destination):
     """
-    Kopiowanie plików do folderu instalacyjnego.
+    Kopiuje pliki systemowe do folderu instalacyjnego.
     """
     print_instructions(3)
     files_to_copy = ["sysboot.py", "system.py", "config.txt"]
@@ -61,7 +61,7 @@ def copy_files(destination):
 
 def finalize_installation(destination):
     """
-    Finalizuje proces instalacji i wyświetla instrukcje dalszego postępowania.
+    Finalizuje instalację i wyświetla instrukcje użytkownikowi.
     """
     print_instructions(4)
     print(f"\nInstallation completed successfully in {destination}!")
@@ -73,7 +73,7 @@ def finalize_installation(destination):
 
 def main():
     """
-    Główna funkcja prowadząca użytkownika przez proces instalacji.
+    Główna funkcja prowadząca proces instalacji krok po kroku.
     """
     print("\n========================================")
     print("          Welcome to AzeOS Installer")
