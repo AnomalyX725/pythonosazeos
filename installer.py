@@ -9,7 +9,7 @@ def print_instructions(step):
     """
     instructions = {
         1: "\nStep 1: Checking and installing dependencies...",
-        2: "\nStep 2: Selecting installation directory...",
+        2: "\nStep 2: Creating installation directory...",
         3: "\nStep 3: Copying necessary files...",
         4: "\nStep 4: Finalizing installation...",
     }
@@ -31,22 +31,26 @@ def install_dependencies():
     else:
         print("No dependencies.txt file found. Skipping dependency installation.")
 
-def select_directory():
+def create_directory():
     """
-    Prowadzi użytkownika przez wybór lokalizacji instalacji.
+    Prowadzi użytkownika przez wybór lokalizacji instalacji i tworzy folder AzeOS.
     """
     print_instructions(2)
     default_path = os.path.expanduser("~/AzeOS")
     print(f"Default installation path: {default_path}")
     user_path = input("Enter installation directory (press Enter to use default): ").strip()
-    return user_path or default_path
+    destination = user_path or default_path
+    
+    # Tworzenie folderu AzeOS w wybranej lokalizacji
+    os.makedirs(destination, exist_ok=True)
+    print(f"Created directory: {destination}")
+    return destination
 
 def copy_files(destination):
     """
-    Kopiowanie plików do wybranego folderu instalacji.
+    Kopiowanie plików do folderu instalacyjnego.
     """
     print_instructions(3)
-    os.makedirs(destination, exist_ok=True)  # Tworzy folder, jeśli nie istnieje
     files_to_copy = ["sysboot.py", "system.py", "config.txt"]
     for file_name in files_to_copy:
         if os.path.exists(file_name):
@@ -77,7 +81,7 @@ def main():
     print("========================================\n")
 
     install_dependencies()
-    destination = select_directory()
+    destination = create_directory()
     copy_files(destination)
     finalize_installation(destination)
 
