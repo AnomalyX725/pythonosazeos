@@ -3,13 +3,25 @@ import shutil
 import subprocess
 import sys
 
+def print_instructions(step):
+    """
+    Wyświetla instrukcję dla konkretnego kroku instalacji.
+    """
+    instructions = {
+        1: "\nStep 1: Checking and installing dependencies...",
+        2: "\nStep 2: Selecting installation directory...",
+        3: "\nStep 3: Copying necessary files...",
+        4: "\nStep 4: Finalizing installation...",
+    }
+    print(instructions.get(step, "\nUnknown Step"))
+
 def install_dependencies():
     """
     Instalacja zależności z pliku dependencies.txt.
     """
-    dependencies_file = os.path.join("install", "dependencies.txt")
+    print_instructions(1)
+    dependencies_file = "dependencies.txt"
     if os.path.exists(dependencies_file):
-        print("Installing dependencies...")
         with open(dependencies_file, "r") as file:
             for line in file:
                 dependency = line.strip()
@@ -19,33 +31,36 @@ def install_dependencies():
     else:
         print("No dependencies.txt file found. Skipping dependency installation.")
 
-def create_folder(destination):
+def select_directory():
     """
-    Tworzenie folderu AzeOS w wybranej lokalizacji.
+    Prowadzi użytkownika przez wybór lokalizacji instalacji.
     """
-    final_path = os.path.join(destination, "AzeOS")
-    os.makedirs(final_path, exist_ok=True)  # Tworzy folder AzeOS, jeśli nie istnieje
-    return final_path
+    print_instructions(2)
+    default_path = os.path.expanduser("~/AzeOS")
+    print(f"Default installation path: {default_path}")
+    user_path = input("Enter installation directory (press Enter to use default): ").strip()
+    return user_path or default_path
 
 def copy_files(destination):
     """
-    Kopiowanie plików z folderu install do wybranego folderu AzeOS.
+    Kopiowanie plików do wybranego folderu instalacji.
     """
+    print_instructions(3)
+    os.makedirs(destination, exist_ok=True)  # Tworzy folder, jeśli nie istnieje
     files_to_copy = ["sysboot.py", "system.py", "config.txt"]
     for file_name in files_to_copy:
-        source = os.path.join("install", file_name)
-        if os.path.exists(source):
+        if os.path.exists(file_name):
             print(f"Copying {file_name} to {destination}...")
-            shutil.copy(source, destination)
+            shutil.copy(file_name, destination)
         else:
-            print(f"{file_name} not found in install directory. Skipping.")
+            print(f"File {file_name} not found in main directory. Skipping.")
 
 def finalize_installation(destination):
     """
-    Finalne kroki instalacji.
+    Finalizuje proces instalacji i wyświetla instrukcje dalszego postępowania.
     """
-    print("\nFinalizing installation...")
-    print(f"All files and dependencies have been installed successfully in {destination}!")
+    print_instructions(4)
+    print(f"\nInstallation completed successfully in {destination}!")
     print("\n========================================")
     print("To run AzeOS:")
     print(f"1. Navigate to the installation directory: cd {destination}")
@@ -54,25 +69,17 @@ def finalize_installation(destination):
 
 def main():
     """
-    Główna funkcja instalatora z możliwością wyboru lokalizacji.
+    Główna funkcja prowadząca użytkownika przez proces instalacji.
     """
     print("\n========================================")
-    print("          AzeOS Installer")
+    print("          Welcome to AzeOS Installer")
+    print("Follow the instructions below to complete the installation.")
     print("========================================\n")
 
     install_dependencies()
-    
-    # Pytanie użytkownika o lokalizację instalacji
-    default_path = os.path.expanduser("~/AzeOS")
-    print(f"Default installation path: {default_path}")
-    destination = input("Enter installation directory (press Enter to use default): ").strip() or default_path
-    
-    # Tworzenie folderu AzeOS
-    final_path = create_folder(destination)
-    print(f"Installing AzeOS in: {final_path}\n")
-
-    copy_files(final_path)
-    finalize_installation(final_path)
+    destination = select_directory()
+    copy_files(destination)
+    finalize_installation(destination)
 
 if __name__ == "__main__":
     main()
